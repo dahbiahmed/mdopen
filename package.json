@@ -5,6 +5,14 @@
   "type": "module",
   "license": "MIT",
   "author": "Ahmed Dahbi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dahbiahmed/mdopen.git"
+  },
+  "homepage": "https://github.com/dahbiahmed/mdopen#readme",
+  "bugs": {
+    "url": "https://github.com/dahbiahmed/mdopen/issues"
+  },
   "bin": {
     "md": "./render.mjs",
     "mdopen": "./render.mjs"

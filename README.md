@@ -110,6 +110,7 @@ npm install -g mdopen   # installs the `md` (and `mdopen`) command
 Or run straight from a checkout — edits are live, no install step:
 
 ```sh
+git clone https://github.com/dahbiahmed/mdopen && cd mdopen
 npm install   # or: bun install
 ln -s "$PWD/render.mjs" ~/.local/bin/md
 ```

@@ -1,0 +1,35 @@
+{
+  "name": "mdopen",
+  "version": "0.1.0",
+  "description": "Render a Markdown file to a self-contained HTML page, annotate it in the browser, and copy the notes back out as markdown for a coding agent.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Ahmed Dahbi",
+  "bin": {
+    "md": "./render.mjs",
+    "mdopen": "./render.mjs"
+  },
+  "files": [
+    "render.mjs",
+    "styles.mjs",
+    "annotate.mjs"
+  ],
+  "keywords": [
+    "markdown",
+    "preview",
+    "annotate",
+    "review",
+    "claude",
+    "coding-agent",
+    "feedback"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "marked": "^15.0.0",
+    "marked-gfm-heading-id": "^4.1.0",
+    "marked-highlight": "^2.2.0",
+    "highlight.js": "^11.10.0"
+  }
+}

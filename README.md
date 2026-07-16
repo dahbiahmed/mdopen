@@ -104,7 +104,7 @@ export, which keeps it readable and free of template-literal escaping.
 ## Install
 
 ```sh
-npm install -g mdopen   # installs the `md` (and `mdopen`) command
+npm install -g @dahbiahmed/mdopen   # installs the `md` (and `mdopen`) command
 ```
 
 Or run straight from a checkout — edits are live, no install step:

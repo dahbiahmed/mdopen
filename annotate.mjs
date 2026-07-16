@@ -9,11 +9,24 @@ export const ANNOTATE_CSS = `
   --anno-accent-soft: #d9730d1f;
   --anno-ease: cubic-bezier(.2,.8,.2,1);
   --anno-pending: #fdecc8;
+  /* Own copy of the styles.mjs palette (same values, --anno-* names) so the
+     layer renders identically when injected into an arbitrary HTML page and
+     never collides with host CSS variables. Update both when theming. */
+  --anno-bg:#ffffff; --anno-fg:#37352f; --anno-muted:#787066; --anno-faint:#9b9689;
+  --anno-border:#37352f1a; --anno-border-strong:#37352f2e; --anno-link:#2383e2;
+  --anno-code-fg:#eb5757; --anno-code-bg:#37352f0f; --anno-block-bg:#f7f6f3;
+  --anno-mark:#fdecc8; --anno-sel:#2383e240; --anno-ok:#448361;
+  --anno-shadow:0 1px 2px #37352f14, 0 6px 24px #37352f0f;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --anno-accent: #ffa344; --anno-accent-soft: #ffa3441f;
     --anno-pending: #56452766;
+    --anno-bg:#191919; --anno-fg:#d4d4d2; --anno-muted:#9b9b98; --anno-faint:#6f6f6c;
+    --anno-border:#ffffff17; --anno-border-strong:#ffffff26; --anno-link:#529cca;
+    --anno-code-fg:#ff7369; --anno-code-bg:#ffffff12; --anno-block-bg:#252525;
+    --anno-mark:#56452766; --anno-sel:#529cca40; --anno-ok:#4dab9a;
+    --anno-shadow:0 1px 2px #0000004d, 0 6px 24px #00000040;
   }
 }
 body { transition: padding-right .24s var(--anno-ease); }
@@ -22,7 +35,7 @@ body { transition: padding-right .24s var(--anno-ease); }
 }
 /* Highlights */
 mark.anno, mark.anno-pending {
-  background: var(--mark); border-radius: 2px; padding: .05em 0;
+  background: var(--anno-mark); border-radius: 2px; padding: .05em 0;
   box-shadow: inset 0 -2px 0 transparent;
   transition: background .14s, box-shadow .14s;
 }
@@ -34,105 +47,105 @@ mark.anno.anno-active {
 mark.anno-pending { background: var(--anno-pending); box-shadow: inset 0 -2px 0 var(--anno-accent); }
 /* Inline code has its own padding, which a mark around the text alone can't
    reach — tint the code element itself so the highlight reads as continuous. */
-:not(pre) > code:has(mark.anno) { background: var(--mark); }
+:not(pre) > code:has(mark.anno) { background: var(--anno-mark); }
 :not(pre) > code:has(mark.anno.anno-active) { background: var(--anno-accent-soft); }
 :not(pre) > code:has(mark.anno-pending) { background: var(--anno-pending); }
 /* Selection pill */
 .anno-pill {
   position: absolute; z-index: 45; display: flex; align-items: center; gap: 6px;
-  padding: .42em .7em .42em .6em; color: var(--fg); background: var(--bg);
-  border: 1px solid var(--border-strong); border-radius: 8px;
-  box-shadow: var(--shadow); font: inherit; font-size: .78em; font-weight: 600;
+  padding: .42em .7em .42em .6em; color: var(--anno-fg); background: var(--anno-bg);
+  border: 1px solid var(--anno-border-strong); border-radius: 8px;
+  box-shadow: var(--anno-shadow); font: inherit; font-size: .78em; font-weight: 600;
   cursor: pointer; white-space: nowrap;
   animation: anno-pop .13s var(--anno-ease);
 }
-.anno-pill:hover { background: var(--block-bg); }
+.anno-pill:hover { background: var(--anno-block-bg); }
 .anno-pill svg { width: 13px; height: 13px; opacity: .75; }
-.anno-pill .anno-kbd { color: var(--faint); font-size: .9em; font-weight: 500; }
+.anno-pill .anno-kbd { color: var(--anno-faint); font-size: .9em; font-weight: 500; }
 /* Composer */
 .anno-composer {
   position: absolute; z-index: 46; width: 328px; padding: 12px;
-  background: var(--bg); border: 1px solid var(--border-strong);
-  border-radius: 12px; box-shadow: var(--shadow);
+  background: var(--anno-bg); border: 1px solid var(--anno-border-strong);
+  border-radius: 12px; box-shadow: var(--anno-shadow);
   animation: anno-pop .16s var(--anno-ease);
 }
 .anno-composer-quote {
-  margin: 0 0 9px; padding-left: 8px; color: var(--muted);
+  margin: 0 0 9px; padding-left: 8px; color: var(--anno-muted);
   border-left: 2px solid var(--anno-accent); font-size: .78em; line-height: 1.45;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .anno-composer textarea {
   display: block; width: 100%; min-height: 68px; resize: vertical;
-  padding: 9px 10px; color: var(--fg); background: var(--block-bg);
-  border: 1px solid var(--border); border-radius: 8px;
+  padding: 9px 10px; color: var(--anno-fg); background: var(--anno-block-bg);
+  border: 1px solid var(--anno-border); border-radius: 8px;
   font: inherit; font-size: .88em; line-height: 1.55;
   transition: border-color .12s, box-shadow .12s;
 }
-.anno-composer textarea::placeholder { color: var(--faint); }
+.anno-composer textarea::placeholder { color: var(--anno-faint); }
 .anno-composer textarea:focus {
-  outline: 0; border-color: var(--link); box-shadow: 0 0 0 3px var(--sel);
+  outline: 0; border-color: var(--anno-link); box-shadow: 0 0 0 3px var(--anno-sel);
 }
 .anno-composer-foot {
   display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 9px;
 }
-.anno-hint { color: var(--faint); font-size: .72em; }
+.anno-hint { color: var(--anno-faint); font-size: .72em; }
 .anno-btn {
-  padding: .34em .8em; color: var(--fg); background: transparent;
+  padding: .34em .8em; color: var(--anno-fg); background: transparent;
   border: 1px solid transparent; border-radius: 6px;
   font: inherit; font-size: .8em; font-weight: 600; cursor: pointer;
   transition: background .12s, opacity .12s;
 }
-.anno-btn:hover { background: var(--code-bg); }
-.anno-btn-primary { color: #fff; background: var(--link); }
-.anno-btn-primary:hover { background: var(--link); filter: brightness(1.08); }
+.anno-btn:hover { background: var(--anno-code-bg); }
+.anno-btn-primary { color: #fff; background: var(--anno-link); }
+.anno-btn-primary:hover { background: var(--anno-link); filter: brightness(1.08); }
 .anno-btn-primary:disabled { opacity: .4; cursor: default; filter: none; }
 /* Sidebar */
 .anno-panel {
   position: fixed; top: 0; right: 0; bottom: 0; z-index: 30;
   display: flex; flex-direction: column; width: var(--anno-w);
-  background: var(--bg); border-left: 1px solid var(--border);
+  background: var(--anno-bg); border-left: 1px solid var(--anno-border);
   visibility: hidden; transform: translateX(100%);
   transition: transform .24s var(--anno-ease), visibility .24s;
 }
 body.anno-open .anno-panel { visibility: visible; transform: none; }
 .anno-head {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  padding: 15px 12px 15px 16px; border-bottom: 1px solid var(--border);
+  padding: 15px 12px 15px 16px; border-bottom: 1px solid var(--anno-border);
 }
 .anno-title {
   display: flex; align-items: baseline; gap: 7px;
   font-size: .78em; font-weight: 700; letter-spacing: .05em;
-  text-transform: uppercase; color: var(--muted);
+  text-transform: uppercase; color: var(--anno-muted);
 }
-.anno-title span { color: var(--faint); font-weight: 600; letter-spacing: 0; }
+.anno-title span { color: var(--anno-faint); font-weight: 600; letter-spacing: 0; }
 .anno-icon {
   display: grid; place-items: center; width: 26px; height: 26px; padding: 0;
-  color: var(--muted); background: none; border: 0; border-radius: 6px;
+  color: var(--anno-muted); background: none; border: 0; border-radius: 6px;
   font-size: 1.1em; line-height: 1; cursor: pointer; transition: background .12s, color .12s;
 }
-.anno-icon:hover { color: var(--fg); background: var(--code-bg); }
+.anno-icon:hover { color: var(--anno-fg); background: var(--anno-code-bg); }
 .anno-list { flex: 1; overflow-y: auto; padding: 10px; scroll-behavior: smooth; }
-.anno-empty { padding: 30px 20px; color: var(--muted); font-size: .84em; line-height: 1.7; }
+.anno-empty { padding: 30px 20px; color: var(--anno-muted); font-size: .84em; line-height: 1.7; }
 .anno-empty kbd { font-size: .85em; }
 .anno-card {
   position: relative; padding: 11px 12px; margin-bottom: 8px; cursor: pointer;
-  background: var(--block-bg); border: 1px solid var(--border);
+  background: var(--anno-block-bg); border: 1px solid var(--anno-border);
   border-radius: 10px;
   transition: border-color .14s, box-shadow .14s, transform .14s var(--anno-ease);
 }
-.anno-card:hover { border-color: var(--border-strong); transform: translateX(-2px); }
+.anno-card:hover { border-color: var(--anno-border-strong); transform: translateX(-2px); }
 .anno-card.anno-active {
-  border-color: var(--anno-accent); box-shadow: 0 0 0 1px var(--anno-accent), var(--shadow);
+  border-color: var(--anno-accent); box-shadow: 0 0 0 1px var(--anno-accent), var(--anno-shadow);
 }
 .anno-card.anno-new { animation: anno-slide .26s var(--anno-ease); }
 .anno-sec {
   display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  color: var(--muted); font-size: .68em; font-weight: 700; letter-spacing: .05em;
+  color: var(--anno-muted); font-size: .68em; font-weight: 700; letter-spacing: .05em;
   text-transform: uppercase; margin-bottom: 6px; padding-right: 46px;
 }
 .anno-quote {
-  color: var(--muted); font-size: .77em; line-height: 1.45; margin-bottom: 7px;
-  padding-left: 8px; border-left: 2px solid var(--border-strong);
+  color: var(--anno-muted); font-size: .77em; line-height: 1.45; margin-bottom: 7px;
+  padding-left: 8px; border-left: 2px solid var(--anno-border-strong);
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   transition: border-color .14s;
 }
@@ -141,7 +154,7 @@ body.anno-open .anno-panel { visibility: visible; transform: none; }
 .anno-del, .anno-edit {
   position: absolute; top: 7px; display: grid; place-items: center;
   width: 22px; height: 22px; padding: 0; opacity: 0;
-  color: var(--muted); background: none; border: 0; border-radius: 5px;
+  color: var(--anno-muted); background: none; border: 0; border-radius: 5px;
   font-size: 1.05em; line-height: 1; cursor: pointer;
   transition: opacity .12s, color .12s, background .12s;
 }
@@ -149,35 +162,35 @@ body.anno-open .anno-panel { visibility: visible; transform: none; }
 .anno-edit { right: 31px; font-size: .85em; }
 .anno-card:hover .anno-del, .anno-del:focus-visible,
 .anno-card:hover .anno-edit, .anno-edit:focus-visible { opacity: 1; }
-.anno-del:hover, .anno-edit:hover { color: var(--code-fg); background: var(--code-bg); }
+.anno-del:hover, .anno-edit:hover { color: var(--anno-code-fg); background: var(--anno-code-bg); }
 .anno-edit-ta {
   display: block; width: 100%; min-height: 54px; resize: vertical;
-  padding: 7px 8px; color: var(--fg); background: var(--bg);
-  border: 1px solid var(--link); border-radius: 6px;
+  padding: 7px 8px; color: var(--anno-fg); background: var(--anno-bg);
+  border: 1px solid var(--anno-link); border-radius: 6px;
   font: inherit; font-size: .85em; line-height: 1.55;
 }
-.anno-edit-ta:focus { outline: 0; box-shadow: 0 0 0 3px var(--sel); }
-.anno-foot { padding: 10px; border-top: 1px solid var(--border); }
+.anno-edit-ta:focus { outline: 0; box-shadow: 0 0 0 3px var(--anno-sel); }
+.anno-foot { padding: 10px; border-top: 1px solid var(--anno-border); }
 .anno-copy {
   display: flex; align-items: center; justify-content: center; gap: 7px;
-  width: 100%; padding: .65em; color: #fff; background: var(--link);
+  width: 100%; padding: .65em; color: #fff; background: var(--anno-link);
   border: 0; border-radius: 8px; font: inherit; font-size: .85em;
   font-weight: 600; cursor: pointer; transition: background .14s, opacity .14s;
 }
 .anno-copy:hover:not(:disabled) { filter: brightness(1.08); }
 .anno-copy:disabled { opacity: .4; cursor: default; }
-.anno-copy.anno-done { background: var(--hl-addition); }
+.anno-copy.anno-done { background: var(--anno-ok); }
 /* Floating toggle */
 .anno-fab {
   position: fixed; right: 20px; bottom: 20px; z-index: 30;
   display: flex; align-items: center; gap: 8px; padding: .58em .95em;
-  color: var(--fg); background: var(--bg);
-  border: 1px solid var(--border-strong); border-radius: 999px;
-  box-shadow: var(--shadow); font: inherit; font-size: .82em;
+  color: var(--anno-fg); background: var(--anno-bg);
+  border: 1px solid var(--anno-border-strong); border-radius: 999px;
+  box-shadow: var(--anno-shadow); font: inherit; font-size: .82em;
   font-weight: 600; cursor: pointer;
   transition: transform .2s var(--anno-ease), opacity .2s, border-color .12s;
 }
-.anno-fab:hover { border-color: var(--fg); }
+.anno-fab:hover { border-color: var(--anno-fg); }
 .anno-fab svg { width: 14px; height: 14px; opacity: .7; }
 body.anno-open .anno-fab { opacity: 0; transform: scale(.9) translateY(6px); pointer-events: none; }
 .anno-count {
@@ -187,7 +200,7 @@ body.anno-open .anno-fab { opacity: 0; transform: scale(.9) translateY(6px); poi
 .anno-toast {
   position: fixed; left: 50%; bottom: 26px; z-index: 50;
   transform: translate(-50%, 10px); opacity: 0; pointer-events: none;
-  padding: .55em 1.05em; color: var(--bg); background: var(--fg);
+  padding: .55em 1.05em; color: var(--anno-bg); background: var(--anno-fg);
   border-radius: 999px; font-size: .8em; font-weight: 600;
   transition: opacity .18s var(--anno-ease), transform .18s var(--anno-ease);
 }
@@ -207,6 +220,14 @@ body.anno-open .anno-fab { opacity: 0; transform: scale(.9) translateY(6px); poi
   .anno-panel, .anno-fab, .anno-composer, .anno-toast, .anno-pill { display: none !important; }
   body.anno-open { padding-right: 0; }
   mark.anno { background: none; box-shadow: none; }
+}
+/* Last so the font-family beats the earlier font:inherit shorthands: the UI
+   must not depend on the host page's font or text color when injected into
+   arbitrary HTML. Values mirror the styles.mjs body rule. */
+.anno-pill, .anno-composer, .anno-panel, .anno-fab, .anno-toast {
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--anno-fg);
 }
 `;
 
@@ -228,7 +249,10 @@ function client() {
 
   const body = document.body;
   const file = body.dataset.mdFile || "document";
-  const article = document.querySelector(".markdown-body");
+  // Rendered markdown wraps content in .markdown-body; an arbitrary HTML page
+  // (html mode) has no such wrapper, so the whole body is the article. The UI
+  // is appended to body too — everything that reads text must skip it (inUI).
+  const article = document.querySelector(".markdown-body") || body;
   const PREFIX = "mdopen:v1:";
   const KEY = PREFIX + (body.dataset.mdHash || "nohash");
   const MAX_AGE = 30 * 864e5;
@@ -278,7 +302,7 @@ function client() {
   function inUI(node) {
     if (!node) return false;
     const el = node.nodeType === 1 ? node : node.parentElement;
-    return !!el && !!el.closest(".anno-panel, .anno-composer, .anno-pill");
+    return !!el && !!el.closest(".anno-panel, .anno-composer, .anno-pill, .anno-fab, .anno-toast");
   }
 
   // --- anchoring -----------------------------------------------------------
@@ -360,6 +384,7 @@ function client() {
     let total = 0;
     let n;
     while ((n = walker.nextNode())) {
+      if (inUI(n)) continue; // when article === body, the panel's text is inside it
       idx.push({ node: n, start: total });
       total += n.nodeValue.length;
     }
@@ -825,6 +850,20 @@ function client() {
     }
     if (composer && !composer.contains(e.target)) closeComposer();
   });
+
+  // html mode injects a <base> so the page's relative assets keep resolving
+  // against its original directory — which also silently retargets same-page
+  // #links there. Restore in-page anchor behavior when a base is present.
+  if (document.querySelector("base")) {
+    document.addEventListener("click", function (e) {
+      const a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a) return;
+      e.preventDefault();
+      const id = a.getAttribute("href").slice(1);
+      const t = id && (document.getElementById(id) || document.getElementsByName(id)[0]);
+      if (t) t.scrollIntoView();
+    });
+  }
 
   fab.onclick = function () { body.classList.add("anno-open"); };
   panel.querySelector("[data-close]").onclick = function () { body.classList.remove("anno-open"); };

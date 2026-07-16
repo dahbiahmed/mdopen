@@ -5,7 +5,8 @@
 A CLI (`md foo.md`) that renders a Markdown file to a **single self-contained
 HTML file** in a temp dir and opens it in the browser. The page carries an
 annotation layer: select text, leave notes, then copy the whole set back out as
-markdown to paste into a coding agent.
+markdown to paste into a coding agent. `.html` files work too: opened **as-is**
+with only the annotation layer injected.
 
 ## Why it exists
 
@@ -89,6 +90,18 @@ the file lives outside it) so the agent knows which file the feedback targets.
 Local images become `data:` URIs at render time because the HTML lives in a
 temp dir where relative paths would dangle; remote URLs pass through.
 
+**html mode is string surgery, not parsing.** A `<base>` tag (so the temp
+copy's relative assets resolve against the original directory — the client
+compensates for the side effect on `#links`), a dataset bootstrap, and the
+style/script block spliced in before `</body>`. No HTML parser, so nothing
+else about the page can change.
+
+**The annotation UI owns its palette.** `ANNOTATE_CSS` uses only `--anno-*`
+variables, defined in its own `:root` block with values mirroring styles.mjs
+(update both when theming). This is what lets the layer drop into arbitrary
+host HTML without inheriting the host's colors/fonts or clobbering its CSS
+variables. The article is `.markdown-body` or, in html mode, `<body>` itself.
+
 **Anchors are character offsets into the article's text content.** Wrapping text
 in `<mark>` splits text nodes but never changes the characters, so an offset
 stays valid no matter how many highlights already exist. That's why offsets are
@@ -114,6 +127,12 @@ existing pending marks in place rather than re-wrapping.
 **Anything clickable that opens the composer must `stopPropagation()`.** The
 document click handler treats a click outside the composer as "close it". Without
 stopping propagation, the click that opens the composer immediately closes it.
+
+**When the article is `<body>` (html mode), the panel's text is inside it.**
+The sidebar shows each note's quote, so a restore that walks all text nodes
+finds the quote text twice and can re-anchor marks onto the panel itself.
+`textIndex()` must skip UI nodes (`inUI`) — and anything else that reads
+document text needs the same care.
 
 **Inline `<code>` needs `:has()` for continuous highlights.** A `<mark>` around
 the text can't reach the code element's own padding, so highlights spanning

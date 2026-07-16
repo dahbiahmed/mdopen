@@ -80,10 +80,24 @@ URIs, so the page stays self-contained even though it lives in a temp dir.
 Remote (`http(s)`) images are left as-is. Missing files get a warning on
 stderr and keep their original path.
 
+## HTML files
+
+`md page.html` opens the page **as-is** with the annotation layer injected —
+same notes, same panel, same copy format. Useful when an agent hands you an
+HTML artifact instead of markdown.
+
+- The page's own styling is untouched, and the annotation UI carries its own
+  palette (following `prefers-color-scheme` independently of the page's theme).
+- Relative images and stylesheets keep working: a `<base>` pointing at the
+  original directory is injected, and in-page `#links` are patched to
+  compensate.
+- With `--no-annotate` there is nothing to inject, so the original file is
+  opened directly.
+
 ## Flags
 
 ```
-md <file.md> [--no-open] [--no-annotate] [--out <path>]
+md <file.md|file.html> [--no-open] [--no-annotate] [--out <path>]
 ```
 
 - `--no-open` — print the generated path instead of opening a browser

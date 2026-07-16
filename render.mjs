@@ -6,6 +6,7 @@
 import { readFileSync, writeFileSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, basename, dirname, resolve, relative } from "node:path";
+import { pathToFileURL } from "node:url";
 import { execFile } from "node:child_process";
 import { createRequire } from "node:module";
 import { createHash } from "node:crypto";
@@ -26,9 +27,11 @@ const outPath = outIdx !== -1 ? args[outIdx + 1] : null;
 const file = args.find((a, i) => !a.startsWith("--") && args[i - 1] !== "--out");
 
 if (!file) {
-  console.error("usage: md <file.md> [--no-open] [--no-annotate] [--out <path>]");
+  console.error("usage: md <file.md|file.html> [--no-open] [--no-annotate] [--out <path>]");
   process.exit(1);
 }
+
+const isHtml = /\.html?$/i.test(file);
 
 let src;
 try {
@@ -91,7 +94,6 @@ marked.use({
 
 const name = basename(file);
 const title = name.replace(/\.[^.]+$/, "");
-const body = marked.parse(src);
 
 // The copy output opens with this path, so make it one the agent can act on:
 // relative to the invocation cwd when the file is under it, absolute otherwise.
@@ -103,7 +105,36 @@ const displayPath = rel && !rel.startsWith("..") ? rel : resolve(file);
 // simply don't come back.
 const hash = createHash("sha256").update(src).digest("hex").slice(0, 16);
 
-const html = `<!doctype html>
+let html;
+if (isHtml) {
+  // Open the page as-is, with the annotation layer injected via plain string
+  // surgery — no HTML parser, so nothing else about the document changes.
+  html = src;
+  if (!noAnnotate) {
+    // The copy lives in a temp dir, so keep the page's relative assets
+    // resolving against its original directory. (The client compensates for
+    // the side effect on same-page #links.) The source was read as utf-8, so
+    // pages that never declare a charset get one — otherwise the browser
+    // falls back to Latin-1 and mangles the injected layer's §/⌘/✓ glyphs.
+    let head = /<base\b/i.test(html) ? "" : `<base href="${esc(pathToFileURL(mdDir).href + "/")}">`;
+    if (!/<meta[^>]+charset/i.test(html)) head = `<meta charset="utf-8">` + head;
+    if (head) {
+      html = /<head\b[^>]*>/i.test(html)
+        ? html.replace(/<head\b[^>]*>/i, (m) => m + head)
+        : head + html;
+    }
+    // <-escape so a hostile path can't smuggle a </script> in.
+    const fileJs = JSON.stringify(displayPath).replace(/</g, "\\u003c");
+    const inject =
+      `\n<style>${ANNOTATE_CSS}</style>\n` +
+      `<script>Object.assign(document.body.dataset,{mdFile:${fileJs},mdHash:"${hash}"});</script>\n` +
+      `<script>${ANNOTATE_JS}</script>\n`;
+    const i = html.toLowerCase().lastIndexOf("</body>");
+    html = i === -1 ? html + inject : html.slice(0, i) + inject + html.slice(i);
+  }
+} else {
+  const body = marked.parse(src);
+  html = `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -118,11 +149,17 @@ ${body}
 ${noAnnotate ? "" : `<script>${ANNOTATE_JS}</script>`}
 </body>
 </html>`;
+}
 
-const dest =
-  outPath ||
-  join(mkdtempSync(join(tmpdir(), "md-")), `${title || "preview"}.html`);
-writeFileSync(dest, html, "utf8");
+let dest;
+if (isHtml && noAnnotate && !outPath) {
+  dest = resolve(file); // nothing to inject — open the original in place
+} else {
+  dest =
+    outPath ||
+    join(mkdtempSync(join(tmpdir(), "md-")), `${title || "preview"}.html`);
+  writeFileSync(dest, html, "utf8");
+}
 
 if (noOpen) {
   console.log(dest);

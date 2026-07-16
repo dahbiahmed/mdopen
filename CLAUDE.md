@@ -33,6 +33,11 @@ Feedback on docs/architecture.md (2 notes)
    Too much detail on schema, not enough on failure modes.
 ```
 
+Quotes from table cells get coordinates appended (`— in table row
+"Enterprise", column "Renewal rate"`), because a bare `"42%"` locates
+nothing. Row/column names come from the table's own first column and header
+row, so they survive rewrites the same way quotes do.
+
 ![Annotated document](docs/annotated-light.png)
 
 Dark mode is a first-class target, not an afterthought — most reading happens

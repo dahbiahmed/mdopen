@@ -1,6 +1,6 @@
 {
   "name": "@dahbiahmed/mdopen",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Render a Markdown file to a self-contained HTML page, annotate it in the browser, and copy the notes back out as markdown for a coding agent.",
   "type": "module",
   "license": "MIT",

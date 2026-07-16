@@ -46,7 +46,12 @@ Feedback on docs/architecture.md (2 notes)
 ```
 
 Each note carries its section heading and the quoted passage, so the agent can
-find every one even after it rewrites the doc. The header names the file by its
+find every one even after it rewrites the doc. Notes on table cells also name
+the cell, since a bare `"42%"` could be anywhere:
+
+```
+   > "42%" — in table row "Enterprise", column "Renewal rate"
+``` The header names the file by its
 path relative to where you ran `md`, so the agent knows exactly which file to
 act on.
 

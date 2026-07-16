@@ -431,6 +431,44 @@ function client() {
     return null;
   }
 
+  // A quote from inside a table cell is often just a number — meaningless
+  // without coordinates. Name the cell the way the table itself does: row
+  // label (first cell of its row) and column header (same index in the
+  // table's first row). Recomputed from the DOM on restore, like sections.
+  function clip(s) {
+    s = s.replace(/\s+/g, " ").trim();
+    return s.length > 40 ? s.slice(0, 37).trim() + "…" : s;
+  }
+
+  function cellOf(el) {
+    const cell = el.closest("td, th");
+    const table = cell && cell.closest("table");
+    if (!table) return null;
+    const row = cell.parentElement;
+    const ci = cell.cellIndex;
+    const head = (table.tHead && table.tHead.rows[0]) || table.rows[0];
+    if (row === head) return { header: true, col: clip(cell.textContent) };
+    const col = head && head.cells[ci] ? clip(head.cells[ci].textContent) : null;
+    // In the first column the quote is the row label itself — the column
+    // header alone is the missing context.
+    const rowLabel = ci > 0 && row.cells[0] ? clip(row.cells[0].textContent) : null;
+    return {
+      col: col,
+      row: rowLabel,
+      ri: row.rowIndex + 1, // 1-based, counting the header row; fallback only
+      ci: ci + 1,
+    };
+  }
+
+  function cellDesc(c) {
+    if (!c) return "";
+    if (c.header) return ' — in the table header, column "' + c.col + '"';
+    const col = c.col ? 'column "' + c.col + '"' : "column " + c.ci;
+    if (!c.row && c.ci === 1) return " — in table " + col;
+    const row = c.row ? 'row "' + c.row + '"' : "row " + c.ri;
+    return " — in table " + row + ", " + col;
+  }
+
   // --- notes ---------------------------------------------------------------
 
   // Takes the marks the composer already placed rather than a Range: by save
@@ -446,6 +484,7 @@ function client() {
       quote: marks.length ? quote : null,
       anchor: marks.length ? anchor : null,
       section: marks.length ? sectionOf(marks[0]) : null,
+      cell: marks.length ? cellOf(marks[0]) : null,
     };
     notes.push(note);
     body.classList.add("anno-open");
@@ -634,7 +673,12 @@ function client() {
       card.append(edit, del);
       const sec = document.createElement("div");
       sec.className = "anno-sec";
-      sec.textContent = note.section || (note.quote ? "Unsectioned" : "General");
+      let secText = note.section || (note.quote ? "Unsectioned" : "General");
+      if (note.cell && !note.cell.header) {
+        secText += " · " + (note.cell.row || note.cell.col || "table");
+        if (note.cell.row && note.cell.col) secText += " × " + note.cell.col;
+      }
+      sec.textContent = secText;
       card.append(sec);
       if (note.quote) {
         const q = document.createElement("div");
@@ -670,7 +714,7 @@ function client() {
       const head = i + 1 + ".";
       if (note.quote) {
         lines.push(head + " " + (note.section ? "§ " + note.section : "(no section)"));
-        lines.push('   > "' + trim(note.quote) + '"');
+        lines.push('   > "' + trim(note.quote) + '"' + cellDesc(note.cell));
       } else {
         lines.push(head + " General");
       }

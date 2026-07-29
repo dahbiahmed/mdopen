@@ -70,8 +70,10 @@ literal `</script>`, and it can't close over anything in module scope.
 `~/.local/bin/md` points **straight at this checkout** — edits are live, no
 install step. Moving or deleting this repo breaks `md` everywhere. `MDOPEN_DIR`
 overrides the location. `package.json` also declares `bin` entries (`md`,
-`mdopen`) so the package is installable via npm; keep `render.mjs` executable
-(it has a shebang) or the symlink install path breaks.
+`mdopen`) so the package is installable via npm — **as `@dahbiahmed/mdopen`,
+never unscoped `mdopen`** (that name 404s; npm's similarity rules blocked it).
+Keep `render.mjs` executable (it has a shebang) or the symlink install path
+breaks.
 
 ## Design decisions worth knowing
 

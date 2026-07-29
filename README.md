@@ -126,6 +126,9 @@ export, which keeps it readable and free of template-literal escaping.
 npm install -g @dahbiahmed/mdopen   # installs the `md` (and `mdopen`) command
 ```
 
+The package is **scoped**: plain `npm install mdopen` 404s (npm's
+name-similarity rules reserve the unscoped name).
+
 Or run straight from a checkout — edits are live, no install step:
 
 ```sh

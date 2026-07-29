@@ -123,11 +123,14 @@ export, which keeps it readable and free of template-literal escaping.
 ## Install
 
 ```sh
-npm install -g @dahbiahmed/mdopen   # installs the `md` (and `mdopen`) command
+npm install -g @dahbiahmed/mdopen
 ```
 
-The package is **scoped**: plain `npm install mdopen` 404s (npm's
-name-similarity rules reserve the unscoped name).
+You get two commands, **`md`** and **`mdopen`**, both doing the same thing.
+(The name must be scoped — there is no unscoped `mdopen` on npm.)
+
+> **oh-my-zsh users:** it aliases `md` to `mkdir -p`, and the alias wins over
+> the command. Use `mdopen`, or put `unalias md` in your `~/.zshrc`.
 
 Or run straight from a checkout — edits are live, no install step:
 

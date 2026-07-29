@@ -51,9 +51,10 @@ the cell, since a bare `"42%"` could be anywhere:
 
 ```
    > "42%" — in table row "Enterprise", column "Renewal rate"
-``` The header names the file by its
-path relative to where you ran `md`, so the agent knows exactly which file to
-act on.
+```
+
+The header names the file by its path relative to where you ran `md`, so the
+agent knows exactly which file to act on.
 
 ## Persistence
 
